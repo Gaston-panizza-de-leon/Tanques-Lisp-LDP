@@ -51,7 +51,7 @@
 (defun pinta ()
     (cls)
     (color 0 0 0)
-    (rectangle 0 0 639 639)
+    (rectangle 0 0 639 339)
     (rectangle 0 0 (get 'escenari 'camp1amp) (get 'escenari 'camp1alt))
 
     (rectangle (get 'escenari 'camp1amp) 0 (get 'escenari 'muramp) 
@@ -63,12 +63,12 @@
     (rectangle (get 'cano1 'posicio) (get 'escenari 'camp1alt) 20 10)
 
     (angle (+ (get 'cano1 'posicio) 10) (+ (get 'escenari 'camp1alt) 10)
-    10 (get 'cano1 'angle))
+    15 (get 'cano1 'angle))
  
     (rectangle (get 'cano2 'posicio) (get 'escenari 'camp2alt) 20 10)
 
     (angle (+ (get 'cano2 'posicio) 10) (+ (get 'escenari 'camp2alt) 10)
-    10 (get 'cano2 'angle))
+    15 (get 'cano2 'angle))
 )
 
 
