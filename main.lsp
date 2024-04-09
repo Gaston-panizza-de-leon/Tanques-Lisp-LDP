@@ -27,26 +27,105 @@
 
     (repeteix))
 
-(defun inc-angle ()
+(defun inc-angle-esq ()
     "incrementa l'angle"
-    (putprop 'programa (+ (get 'programa 'angle) 1) ' angle))
+    (cond 
+    ((< 180 (get 'cano1 'angle)) (putprop 'cano1 180 ' angle))
+    ((> 0 (get 'cano1 'angle)) (putprop 'cano1 0 ' angle))
+    (t (putprop 'cano1 (+ (get 'cano1 'angle) 1) ' angle))))
 
-(defun dec-angle ()
+(defun dec-angle-esq ()
     "decrementa l'angle"
-    (putprop 'programa (- (get 'programa 'angle) 1) ' angle))
+    (cond 
+    ((< 180 (get 'cano1 'angle)) (putprop 'cano1 180 ' angle))
+    ((> 0 (get 'cano1 'angle)) (putprop 'cano1 0 ' angle))
+    (t (putprop 'cano1 (- (get 'cano1 'angle) 1) ' angle))))
+
+(defun inc-angle-dre ()
+    "incrementa l'angle"
+    (cond 
+    ((< 180 (get 'cano2 'angle)) (putprop 'cano2 180 ' angle))
+    ((> 0 (get 'cano2 'angle)) (putprop 'cano2 0 ' angle))
+    (t (putprop 'cano2 (- (get 'cano2 'angle) 1) ' angle))))
+
+(defun dec-angle-dre ()
+    "decrementa l'angle"
+    (cond 
+    ((< 180 (get 'cano2 'angle)) (putprop 'cano2 180 ' angle))
+    ((> 0 (get 'cano2 'angle)) (putprop 'cano2 0 ' angle))
+    (t (putprop 'cano2 (+ (get 'cano2 'angle) 1) ' angle))))
+
+
+(defun mou1-esq ()
+    (cond 
+    ((> 0 (get 'cano1 'posicio)) (putprop 'cano1 0 ' posicio))
+    (t (putprop 'cano1 (- (get 'cano1 'posicio) 1) ' posicio))
+))
+
+(defun mou1-dre ()
+    (cond
+    ((< (- (get 'escenari 'camp1amp) 20) (get 'cano1 'posicio)) 
+        (putprop 'cano1 (- (get 'escenari 'camp1amp) 20) ' posicio))
+    (t (putprop 'cano1 (+ (get 'cano1 'posicio) 1) ' posicio))
+))
+
+(defun mou2-esq ()
+    (cond 
+    ((> (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 
+    (get 'cano2 'posicio)) 
+    (putprop 'cano2 (+ (get 'escenari 'camp1amp) 
+    (get 'escenari 'muramp)) ' posicio))
+    (t (putprop 'cano2 (- (get 'cano2 'posicio) 1) ' posicio))
+))
+
+
+(defun mou2-dre ()
+    (cond
+    ((< 620 (get 'cano2 'posicio)) 
+        (putprop 'cano2 620 ' posicio))
+    (t (putprop 'cano2 (+ (get 'cano2 'posicio) 1) ' posicio))
+))
 
 (defun repeteix ()
     (pinta)
-    (princ "Pitja fletxa cap amunt o cap avall o ESC.")
+    (princ "Pitja ESC per acabar.")
     (terpri)
-    (cond ((equal (get-key) 328) ; fletxa cap amunt
-           (inc-angle) (repeteix)) ; incrementa angle i repeteix
-          ((equal (get-key) 336) ; fletxa cap avall
-           (dec-angle) (repeteix)) ; decrementa angle i repeteix
+    (cond ((equal (get-key) 119) ; w
+           (inc-angle-esq) (repeteix)) ; puja canó esquerra
+          ((equal (get-key) 115) ; s
+           (dec-angle-esq) (repeteix)) ; baixa canó esquerra
+
+
+          ((equal (get-key) 105) ; i
+           (inc-angle-dre) (repeteix)) ; puja canó esquerra
+          ((equal (get-key) 107) ; k
+           (dec-angle-dre) (repeteix)) ; baixa canó esquerra
+
+          ((equal (get-key) 97) ; a
+           (mou1-esq) (repeteix)) ; mou tank1 esquerra
+          ((equal (get-key) 100) ; d
+           (mou1-dre) (repeteix)) ; mou tank1 dreta
+
+          ((equal (get-key) 106) ; j
+           (mou2-esq) (repeteix)) ; mou tank2 esquerra
+          ((equal (get-key) 108) ; l
+           (mou2-dre) (repeteix)) ; baixa tank2 dreta
+
           ((equal (get-key) 27)  ; ESC
            t)                      ; acaba recursió
           (t                 ; altrament
            (repeteix))))           ; repeteix
+
+
+
+;q: 113 més potència
+;e: 101 menys potència
+;f: 102 dispara
+
+
+;o: 111 més potència
+;u: 117 menys potència
+;h: 104 dispara
 
 (defun pinta ()
     (cls)
