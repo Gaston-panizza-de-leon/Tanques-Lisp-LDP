@@ -31,20 +31,17 @@
     "incrementa l'angle"
     (cond 
     ((< 180 (get 'cano1 'angle)) (putprop 'cano1 180 ' angle))
-    ((> 0 (get 'cano1 'angle)) (putprop 'cano1 0 ' angle))
     (t (putprop 'cano1 (+ (get 'cano1 'angle) 1) ' angle))))
 
 (defun dec-angle-esq ()
     "decrementa l'angle"
     (cond 
-    ((< 180 (get 'cano1 'angle)) (putprop 'cano1 180 ' angle))
     ((> 0 (get 'cano1 'angle)) (putprop 'cano1 0 ' angle))
     (t (putprop 'cano1 (- (get 'cano1 'angle) 1) ' angle))))
 
 (defun inc-angle-dre ()
     "incrementa l'angle"
     (cond 
-    ((< 180 (get 'cano2 'angle)) (putprop 'cano2 180 ' angle))
     ((> 0 (get 'cano2 'angle)) (putprop 'cano2 0 ' angle))
     (t (putprop 'cano2 (- (get 'cano2 'angle) 1) ' angle))))
 
@@ -52,7 +49,6 @@
     "decrementa l'angle"
     (cond 
     ((< 180 (get 'cano2 'angle)) (putprop 'cano2 180 ' angle))
-    ((> 0 (get 'cano2 'angle)) (putprop 'cano2 0 ' angle))
     (t (putprop 'cano2 (+ (get 'cano2 'angle) 1) ' angle))))
 
 
