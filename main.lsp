@@ -2,14 +2,26 @@
     "inici del programa (tecles)"
     (putprop 'escenari (+ 20 (random 21)) 'muramp)
     (putprop 'escenari (+ 100 (random 51)) 'muralt)
-    (putprop 'escenari (+ (- (/ (- 640 (get 'escenari 'muramp)) 2) 20) (random 40)) 'camp1amp)
+
+    (putprop 'escenari (+ (- (floor (- 640 (get 'escenari 'muramp)) 2) 20)
+     (random 40)) 'camp1amp)
+
+    (putprop 'escenari (- (- 640 (get 'escenari 'muramp)) 
+    (get 'escenari 'camp1amp)) 'camp2amp)
+
     (putprop 'escenari (+ 15 (random 31)) 'camp1alt)
-    (putprop 'escenari (- (- 640 (get 'escenari 'muramp)) (get 'escenari 'camp1amp)) 'camp2amp)
     (putprop 'escenari (+ 15 (random 31)) 'camp2alt)
+
     (putprop 'cano1 45 'angle)
-    (putprop 'cano2 45 'angle)
-    (putprop 'cano1 (+ (/ (get 'escenari 'camp1amp) 3) (* (/ (get 'escenari 'camp1amp) 3) 2)) 'posicio)
-    (putprop 'cano2 (+ (/ (get 'escenari 'camp2amp) 3) (* (/ (get 'escenari 'camp2amp) 3) 2)) 'posicio)
+    (putprop 'cano2 135 'angle)
+
+    (putprop 'cano1 (+ (floor (get 'escenari 'camp1amp) 3) 
+    (random (floor (get 'escenari 'camp1amp) 3)))'posicio)
+
+    (putprop 'cano2 (+ (+ (+ (floor (get 'escenari 'camp2amp) 3) 
+    (random (floor (get 'escenari 'camp2amp) 3))) (get 'escenari 
+    'camp1amp)) (get 'escenari 'muramp)) 'posicio)
+
     (putprop 'cano1 20 'velocitat)
     (putprop 'cano2 20 'velocitat)
 
@@ -38,15 +50,27 @@
 
 (defun pinta ()
     (cls)
-    (color 255 0 0)
-    (rectangle 0 0 640 640)
-    
-    ;(color 0 0 0)
-    ;(cercle 320 170 100 12)
-    ;(color 255 0 0)
-    ;(angle 320 170 100 (get 'programa 'angle))
-    ;(color 0 0 0)
+    (color 0 0 0)
+    (rectangle 0 0 639 639)
+    (rectangle 0 0 (get 'escenari 'camp1amp) (get 'escenari 'camp1alt))
+
+    (rectangle (get 'escenari 'camp1amp) 0 (get 'escenari 'muramp) 
+    (get 'escenari 'muralt))
+
+    (rectangle (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 0 
+    (get 'escenari 'camp2amp) (get 'escenari 'camp2alt))
+
+    (rectangle (get 'cano1 'posicio) (get 'escenari 'camp1alt) 20 10)
+
+    (angle (+ (get 'cano1 'posicio) 10) (+ (get 'escenari 'camp1alt) 10)
+    10 (get 'cano1 'angle))
+ 
+    (rectangle (get 'cano2 'posicio) (get 'escenari 'camp2alt) 20 10)
+
+    (angle (+ (get 'cano2 'posicio) 10) (+ (get 'escenari 'camp2alt) 10)
+    10 (get 'cano2 'angle))
 )
+
 
 (defun angle (x y r angle)
     (move x y)
@@ -59,17 +83,6 @@
     (drawrel 0 h)
     (drawrel (- w) 0)
     (drawrel 0 (- h)))
-
-(defun cercle (x y radi segments)
-    (mover (+ x radi) y)
-    (cercle2 x y radi (/ 360 segments) 0))
-
-(defun cercle2 (x y radi pas angle)
-  (cond ((< angle 360)
-         (drawr (+ x (* radi (cos (radians (+ angle pas)))))
-                (+ y (* radi (sin (radians (+ angle pas))))))
-         (cercle2 x y radi pas (+ angle pas)))
-        (t t)))
 
 (defun mover (x y)
   "mou a les coordenades arrodonides"
