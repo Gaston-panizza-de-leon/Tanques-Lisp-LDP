@@ -2,12 +2,17 @@
     "inici del programa (tecles)"
     (putprop 'escenari (+ 20 (random 21)) 'muramp)
     (putprop 'escenari (+ 100 (random 51)) 'muralt)
-    (putprop 'escenari (+ 100 (random 51)) 'camp1amp)
-    (putprop 'escenari (+ 100 (random 51)) 'camp1alt)
-    (putprop 'escenari (+ 100 (random 51)) 'camp2amp)
-    (putprop 'escenari (+ 100 (random 51)) 'camp2alt)
+    (putprop 'escenari (+ (- (/ (- 640 (get 'escenari 'muramp)) 2) 20) (random 40)) 'camp1amp)
+    (putprop 'escenari (+ 15 (random 31)) 'camp1alt)
+    (putprop 'escenari (- (- 640 (get 'escenari 'muramp)) (get 'escenari 'camp1amp)) 'camp2amp)
+    (putprop 'escenari (+ 15 (random 31)) 'camp2alt)
     (putprop 'cano1 45 'angle)
     (putprop 'cano2 45 'angle)
+    (putprop 'cano1 (+ (/ (get 'escenari 'camp1amp) 3) (* (/ (get 'escenari 'camp1amp) 3) 2)) 'posicio)
+    (putprop 'cano2 (+ (/ (get 'escenari 'camp2amp) 3) (* (/ (get 'escenari 'camp2amp) 3) 2)) 'posicio)
+    (putprop 'cano1 20 'velocitat)
+    (putprop 'cano2 20 'velocitat)
+
     (repeteix))
 
 (defun inc-angle ()
