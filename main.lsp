@@ -1,10 +1,13 @@
-(defun inici ()
+;AUTORES: Gregori Serra Vinogradov, Lucas Gastón Panizza de León
+
+
+(defun inicia ()
     "inici del programa (tecles)"
     (putprop 'escenari (+ 20 (random 21)) 'muramp)
     (putprop 'escenari (+ 100 (random 51)) 'muralt)
 
     (putprop 'escenari (+ (- (floor (- 640 (get 'escenari 'muramp)) 2) 20)
-     (random 40)) 'camp1amp)
+    (random 40)) 'camp1amp)
 
     (putprop 'escenari (- (- 640 (get 'escenari 'muramp)) 
     (get 'escenari 'camp1amp)) 'camp2amp)
@@ -18,9 +21,13 @@
     (putprop 'cano1 (+ (floor (get 'escenari 'camp1amp) 3) 
     (random (floor (get 'escenari 'camp1amp) 3)))'posicio)
 
+    (putprop 'cano1 (+ (get 'escenari 'camp1alt) 10) 'altura)
+
     (putprop 'cano2 (+ (+ (+ (floor (get 'escenari 'camp2amp) 3) 
     (random (floor (get 'escenari 'camp2amp) 3))) (get 'escenari 
     'camp1amp)) (get 'escenari 'muramp)) 'posicio)
+
+    (putprop 'cano2 (+ (get 'escenari 'camp2alt) 10) 'altura)
 
     (putprop 'cano1 20 'velocitat)
     (putprop 'cano2 20 'velocitat)
@@ -82,6 +89,59 @@
     (t (putprop 'cano2 (+ (get 'cano2 'posicio) 1) ' posicio))
 ))
 
+(defun mespotencia-esq ()
+    (cond 
+    ((< 100 (get 'cano1 'velocitat)) (putprop 'cano1 100 ' velocitat))
+    (t (putprop 'cano1 (+ (get 'cano1 'velocitat) 2) ' velocitat))
+))
+
+(defun menyspotencia-esq ()
+    (cond 
+    ((> 10 (get 'cano1 'velocitat)) (putprop 'cano1 10 ' velocitat))
+    (t (putprop 'cano1 (- (get 'cano1 'velocitat) 2) ' velocitat))
+))
+
+(defun mespotencia-dre ()
+    (cond 
+    ((< 100 (get 'cano2 'velocitat)) (putprop 'cano2 100 ' velocitat))
+    (t (putprop 'cano2 (+ (get 'cano2 'velocitat) 2) ' velocitat))
+))
+
+(defun menyspotencia-dre ()
+    (cond 
+    ((> 10 (get 'cano2 'velocitat)) (putprop 'cano2 10 ' velocitat))
+    (t (putprop 'cano2 (- (get 'cano2 'velocitat) 2) ' velocitat))
+))
+
+(defun dispara-esq (temps) (sleep 0.0001) (cond 
+((>= 0 (coordy 'cano1 (get 'cano1 'velocitat) temps)) nil)
+
+(t (drawr (coordx 'cano1 (get 'cano1 'velocitat) temps) 
+          (coordy 'cano1 (get 'cano1 'velocitat) temps))
+          (dispara-esq  (+  0.1 temps)))))
+
+
+(defun dispara-dre (temps)(sleep 0.0001)(cond 
+
+((> 0 (coordy 'cano2 (get 'cano2 'velocitat) temps)) nil)
+
+;continua dibujando la trayectoria del proyectil
+(t (drawr (coordx 'cano2 (get 'cano2 'velocitat) temps)
+          (coordy 'cano2 (get 'cano2 'velocitat) temps))
+          (dispara-dre  (+  0.1 temps)))))
+
+;Funciones coordenadas
+; X = (V*cosa)*T+x0
+; Y = (V*sena)*T+1/2*a*t^2
+
+(defun coordx (cano velocitat temps) 
+    (+ (* (* velocitat (cos (radians (get cano 'angle)))) temps) 
+    (+ (get cano 'posicio) 10)))
+(defun coordy (cano velocitat temps)
+    (+ (+ (* (* velocitat (sin (radians (get cano 'angle)))) temps)
+    (* 0.5(* -9.8 (* temps temps)))) (get cano 'altura)))
+
+
 (defun repeteix ()
     (pinta)
     (princ "Pitja ESC per acabar.")
@@ -107,6 +167,23 @@
           ((equal (get-key) 108) ; l
            (mou2-dre) (repeteix)) ; baixa tank2 dreta
 
+          ((equal (get-key) 113) ; q
+           (mespotencia-esq) (repeteix)) ; més potència canó esquerra
+          ((equal (get-key) 101) ; e
+           (menyspotencia-esq) (repeteix)) ; menys potència canó esquerra
+
+          ((equal (get-key) 111) ; o
+           (mespotencia-dre) (repeteix)) ; més potència canó dreta
+          ((equal (get-key) 117) ; u
+           (menyspotencia-dre) (repeteix)) ; menys potència canó dreta
+
+           ((equal (get-key) 102) ; f
+           (dispara-esq 0) (repeteix)) ; dispara canó esquerra
+
+          ((equal (get-key) 104) ; h
+           (dispara-dre 0) (repeteix)) ; dispara canó dreta
+
+
           ((equal (get-key) 27)  ; ESC
            t)                      ; acaba recursió
           (t                 ; altrament
@@ -114,36 +191,34 @@
 
 
 
-;q: 113 més potència
-;e: 101 menys potència
-;f: 102 dispara
-
-
-;o: 111 més potència
-;u: 117 menys potència
-;h: 104 dispara
-
 (defun pinta ()
     (cls)
     (color 0 0 0)
     (rectangle 0 0 639 339)
+
+    ;CAMP1 CANO1
+    (color 0 128 0)
     (rectangle 0 0 (get 'escenari 'camp1amp) (get 'escenari 'camp1alt))
-
-    (rectangle (get 'escenari 'camp1amp) 0 (get 'escenari 'muramp) 
-    (get 'escenari 'muralt))
-
-    (rectangle (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 0 
-    (get 'escenari 'camp2amp) (get 'escenari 'camp2alt))
 
     (rectangle (get 'cano1 'posicio) (get 'escenari 'camp1alt) 20 10)
 
     (angle (+ (get 'cano1 'posicio) 10) (+ (get 'escenari 'camp1alt) 10)
-    15 (get 'cano1 'angle))
+    (get 'cano1 'velocitat) (get 'cano1 'angle))
+
+    ;CAMP2 CANO2
+    (color 255 0 0)
+    (rectangle (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 0 
+    (get 'escenari 'camp2amp) (get 'escenari 'camp2alt))
  
     (rectangle (get 'cano2 'posicio) (get 'escenari 'camp2alt) 20 10)
 
     (angle (+ (get 'cano2 'posicio) 10) (+ (get 'escenari 'camp2alt) 10)
-    15 (get 'cano2 'angle))
+    (get 'cano2 'velocitat) (get 'cano2 'angle))
+
+    ;MUR
+    (color 0 0 0)
+    (rectangle (get 'escenari 'camp1amp) 0 (get 'escenari 'muramp) 
+    (get 'escenari 'muralt))
 )
 
 
@@ -159,11 +234,6 @@
     (drawrel (- w) 0)
     (drawrel 0 (- h)))
 
-(defun mover (x y)
-  "mou a les coordenades arrodonides"
-  (move (round x) 
-        (round y)))
-
 (defun drawr (x y)
   "pinta a les coordenades arrodonides"
   (draw (round x) 
@@ -171,3 +241,13 @@
 
 (defun radians (graus)
   (/ (* graus (* 2 pi)) 360))
+
+(defun sleep (seconds)
+    "Espera la quantitat indicada de segons"
+    ; Això és un bucle iteratiu. NO PODEU FER-LO SERVIR ENLLOC MÉS
+    (do ((endtime (+ (get-internal-real-time)
+                     (* seconds internal-time-units-per-second))))
+        ((> (get-internal-real-time) endtime))))
+
+(inicia)
+
