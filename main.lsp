@@ -126,6 +126,7 @@
 ((> 0 (coordy 'cano2 (get 'cano2 'velocitat) temps)) nil)
 
 ;continua dibujando la trayectoria del proyectil
+
 (t (drawr (coordx 'cano2 (get 'cano2 'velocitat) temps)
           (coordy 'cano2 (get 'cano2 'velocitat) temps))
           (dispara-dre  (+  0.1 temps)))))
@@ -178,9 +179,11 @@
            (menyspotencia-dre) (repeteix)) ; menys potència canó dreta
 
            ((equal (get-key) 102) ; f
+           (move (+ 10 (get 'cano1 'posicio)) (get 'cano1 'altura))
            (dispara-esq 0) (repeteix)) ; dispara canó esquerra
 
           ((equal (get-key) 104) ; h
+           (move (+ 10 (get 'cano2 'posicio)) (get 'cano2 'altura)) 
            (dispara-dre 0) (repeteix)) ; dispara canó dreta
 
 
@@ -250,4 +253,3 @@
         ((> (get-internal-real-time) endtime))))
 
 (inicia)
-
