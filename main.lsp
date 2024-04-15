@@ -1,4 +1,4 @@
-;AUTORES: Gregori Serra Vinogradov, Lucas Gastón Panizza de León
+;AUTORS: Gregori Serra Vinogradov, Lucas Gastón Panizza de León
 
 
 (defun inicia ()
@@ -14,6 +14,8 @@
 
     (putprop 'escenari (+ 15 (random 31)) 'camp1alt)
     (putprop 'escenari (+ 15 (random 31)) 'camp2alt)
+
+    (putprop 'escenari 0 'gameover)
 
     (putprop 'cano1 45 'angle)
     (putprop 'cano2 135 'angle)
@@ -113,25 +115,104 @@
     (t (putprop 'cano2 (- (get 'cano2 'velocitat) 2) ' velocitat))
 ))
 
+;Dispara el canó de la esquerra
+;Si impacta l'altre canó es termina la partida
+;Si impacta altre objecte deixa de pintar
+;Si no impacta res, es continua dibuixant la trajectòria
 (defun dispara-esq (temps) (sleep 0.0001) (cond 
-((>= 0 (coordy 'cano1 (get 'cano1 'velocitat) temps)) nil)
 
+;Si impacta amb el primer camp = nil
+((and (< (coordx 'cano1 (get 'cano1 'velocitat) temps) 
+         (get 'escenari 'camp1amp))
+      (< (coordy 'cano1 (get 'cano1 'velocitat) temps) 
+         (get 'escenari 'camp1alt))) nil)
+
+;Si impacta amb el mur = nil
+((and (and (> (coordx 'cano1 (get 'cano1 'velocitat) temps) 
+         (get 'escenari 'camp1amp))
+      (< (coordx 'cano1 (get 'cano1 'velocitat) temps) 
+         (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)))) 
+        (< (coordy 'cano1 (get 'cano1 'velocitat) temps) 
+        (get 'escenari 'muralt)))nil)
+
+;Si impacta amb el segon camp = nil
+((and (> (coordx 'cano1 (get 'cano1 'velocitat) temps) 
+         (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)))
+      (< (coordy 'cano1 (get 'cano1 'velocitat) temps) 
+         (get 'escenari 'camp2alt))) nil)
+
+;Si surt de la pantalla = nil
+((< (coordx 'cano1 (get 'cano1 'velocitat) temps) 0) nil)
+((> (coordx 'cano1 (get 'cano1 'velocitat) temps) 640) nil)
+((> (coordy 'cano1 (get 'cano1 'velocitat) temps) 340) nil)
+
+;Impacta canó, finalitza el joc
+((and (and (< (get 'cano2 'posicio) 
+    (coordx 'cano1 (get 'cano1 'velocitat) temps))
+    (< (coordx 'cano1 (get 'cano1 'velocitat) temps) 
+    (+ 20 (get 'cano2 'posicio))))
+
+    (and (> (+ (get 'escenari 'camp2alt) 10) 
+    (coordy 'cano1 (get 'cano1 'velocitat) temps)) 
+    (> (coordy 'cano1 (get 'cano1 'velocitat) temps) 
+    (get 'escenari 'camp2alt)))) 
+    (putprop 'escenari 1 'gameover))
+
+;No impacta segueix dibuixant 
 (t (drawr (coordx 'cano1 (get 'cano1 'velocitat) temps) 
           (coordy 'cano1 (get 'cano1 'velocitat) temps))
-          (dispara-esq  (+  0.1 temps)))))
+          (dispara-esq  (+  0.05 temps)))))
 
 
+;Dispara el canó de la dreta 
+;Si impacta l'altre canó es termina la partida
+;Si impacta altre objecte deixa de pintar
+;Si no impacta res, es continua dibuixant la trajectòria
 (defun dispara-dre (temps)(sleep 0.0001)(cond 
 
-((> 0 (coordy 'cano2 (get 'cano2 'velocitat) temps)) nil)
+;Si impacta amb el primer camp = nil
+((and (< (coordx 'cano2 (get 'cano2 'velocitat) temps) 
+         (get 'escenari 'camp1amp))
+      (< (coordy 'cano2 (get 'cano2 'velocitat) temps) 
+         (get 'escenari 'camp1alt))) nil)
 
-;continua dibujando la trayectoria del proyectil
+;Si impacta amb el mur = nil
+((and (and (> (coordx 'cano2 (get 'cano2 'velocitat) temps) 
+         (get 'escenari 'camp1amp))
+      (< (coordx 'cano2 (get 'cano2 'velocitat) temps) 
+         (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)))) 
+        (< (coordy 'cano2 (get 'cano2 'velocitat) temps) 
+        (get 'escenari 'muralt)))nil)
 
+;Si impacta amb el segon camp = nil
+((and (> (coordx 'cano2 (get 'cano2 'velocitat) temps) 
+         (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)))
+      (< (coordy 'cano2 (get 'cano2 'velocitat) temps) 
+         (get 'escenari 'camp2alt))) nil)
+
+;Si surt de la pantalla = nil
+((< (coordx 'cano2 (get 'cano2 'velocitat) temps) 0) nil)
+((> (coordx 'cano2 (get 'cano2 'velocitat) temps) 640) nil)
+((> (coordy 'cano2 (get 'cano2 'velocitat) temps) 340) nil)
+
+
+;Impacta canó, finalitza el joc
+((and (and (< (get 'cano1 'posicio) 
+    (coordx 'cano2 (get 'cano2 'velocitat) temps))
+    (< (coordx 'cano2 (get 'cano2 'velocitat) temps) 
+    (+ 20 (get 'cano1 'posicio))))
+
+    (and (> (+ (get 'escenari 'camp1alt) 10) 
+    (coordy 'cano2 (get 'cano2 'velocitat) temps)) 
+    (> (coordy 'cano2 (get 'cano2 'velocitat) temps) 
+    (get 'escenari 'camp1alt)))) 
+    (putprop 'escenari 1 'gameover))
+;No impacta segueix dibuixant 
 (t (drawr (coordx 'cano2 (get 'cano2 'velocitat) temps)
           (coordy 'cano2 (get 'cano2 'velocitat) temps))
-          (dispara-dre  (+  0.1 temps)))))
+          (dispara-dre  (+  0.05 temps)))))
 
-;Funciones coordenadas
+;Funcions coordinades
 ; X = (V*cosa)*T+x0
 ; Y = (V*sena)*T+1/2*a*t^2
 
@@ -147,7 +228,11 @@
     (pinta)
     (princ "Pitja ESC per acabar.")
     (terpri)
-    (cond ((equal (get-key) 119) ; w
+    (cond  ((equal (get 'escenari 'gameover) 1) 
+            (color 255 0 0)
+            "GAME OVER") 
+    
+          ((equal (get-key) 119) ; w
            (inc-angle-esq) (repeteix)) ; puja canó esquerra
           ((equal (get-key) 115) ; s
            (dec-angle-esq) (repeteix)) ; baixa canó esquerra
@@ -168,14 +253,14 @@
           ((equal (get-key) 108) ; l
            (mou2-dre) (repeteix)) ; baixa tank2 dreta
 
-          ((equal (get-key) 113) ; q
-           (mespotencia-esq) (repeteix)) ; més potència canó esquerra
           ((equal (get-key) 101) ; e
+           (mespotencia-esq) (repeteix)) ; més potència canó esquerra
+          ((equal (get-key) 113) ; q
            (menyspotencia-esq) (repeteix)) ; menys potència canó esquerra
 
-          ((equal (get-key) 111) ; o
-           (mespotencia-dre) (repeteix)) ; més potència canó dreta
           ((equal (get-key) 117) ; u
+           (mespotencia-dre) (repeteix)) ; més potència canó dreta
+          ((equal (get-key) 111) ; o
            (menyspotencia-dre) (repeteix)) ; menys potència canó dreta
 
            ((equal (get-key) 102) ; f
@@ -185,7 +270,7 @@
           ((equal (get-key) 104) ; h
            (move (+ 10 (get 'cano2 'posicio)) (get 'cano2 'altura)) 
            (dispara-dre 0) (repeteix)) ; dispara canó dreta
-
+           
 
           ((equal (get-key) 27)  ; ESC
            t)                      ; acaba recursió
