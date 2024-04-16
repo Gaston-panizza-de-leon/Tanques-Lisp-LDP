@@ -1,72 +1,94 @@
 ;AUTORS: Gregori Serra Vinogradov, Lucas Gastón Panizza de León
 
-
+;Iniciam les propietats dels símbols escenari cano1 i cano2
+;i iniciam el bucle (repeteix)
 (defun inicia ()
-    "inici del programa (tecles)"
+    ;Amplada i altura mur
     (putprop 'escenari (+ 20 (random 21)) 'muramp)
     (putprop 'escenari (+ 100 (random 51)) 'muralt)
 
+    ;Amplada i altura camp1
+    ;L'amplada del primer camp és igual a un valor random entre  
+    ;amplada total-amplada del mur/2 -20 i +20.
+    ;Això es fa així perquè la diferència màxima amb l'altre camp 
+    ;ha de ser de 40 píxels.
     (putprop 'escenari (+ (- (floor (- 640 (get 'escenari 'muramp)) 2) 20)
     (random 40)) 'camp1amp)
 
+    (putprop 'escenari (+ 15 (random 31)) 'camp1alt)
+
+    ;Amplada i altura camp2
+    ;L'amplada del camp2 és l'amplada restant
     (putprop 'escenari (- (- 640 (get 'escenari 'muramp)) 
     (get 'escenari 'camp1amp)) 'camp2amp)
 
-    (putprop 'escenari (+ 15 (random 31)) 'camp1alt)
     (putprop 'escenari (+ 15 (random 31)) 'camp2alt)
 
-    (putprop 'escenari 0 'gameover)
-
+    ;Angle, posició, altura i velocitat cano1
     (putprop 'cano1 45 'angle)
-    (putprop 'cano2 135 'angle)
 
+    ;La posició horitzontal és un valor random dins del segon terç
+    ;del primer camp
     (putprop 'cano1 (+ (floor (get 'escenari 'camp1amp) 3) 
     (random (floor (get 'escenari 'camp1amp) 3)))'posicio)
 
     (putprop 'cano1 (+ (get 'escenari 'camp1alt) 10) 'altura)
 
+    (putprop 'cano1 20 'velocitat)
+
+    ;Angle, posició, altura i velocitat cano2
+    (putprop 'cano2 135 'angle) ;180-45
+
+    ;La posició horitzontal és un valor random dins del segon terç
+    ;del segon camp
     (putprop 'cano2 (+ (+ (+ (floor (get 'escenari 'camp2amp) 3) 
     (random (floor (get 'escenari 'camp2amp) 3))) (get 'escenari 
     'camp1amp)) (get 'escenari 'muramp)) 'posicio)
 
     (putprop 'cano2 (+ (get 'escenari 'camp2alt) 10) 'altura)
 
-    (putprop 'cano1 20 'velocitat)
     (putprop 'cano2 20 'velocitat)
+
+    ;Propietat fi de partida
+    (putprop 'escenari 0 'gameover)
 
     (repeteix))
 
+;Incrementa angle canó esquerra i comprova si angle és major a 180
 (defun inc-angle-esq ()
-    "incrementa l'angle"
     (cond 
     ((< 180 (get 'cano1 'angle)) (putprop 'cano1 180 ' angle))
     (t (putprop 'cano1 (+ (get 'cano1 'angle) 1) ' angle))))
 
+;Decrementa angle canó esquerra i comprova si angle és menor a 0
 (defun dec-angle-esq ()
-    "decrementa l'angle"
     (cond 
     ((> 0 (get 'cano1 'angle)) (putprop 'cano1 0 ' angle))
     (t (putprop 'cano1 (- (get 'cano1 'angle) 1) ' angle))))
 
+;Incrementa angle canó dreta i comprova si angle és major a 180
 (defun inc-angle-dre ()
-    "incrementa l'angle"
-    (cond 
-    ((> 0 (get 'cano2 'angle)) (putprop 'cano2 0 ' angle))
-    (t (putprop 'cano2 (- (get 'cano2 'angle) 1) ' angle))))
-
-(defun dec-angle-dre ()
-    "decrementa l'angle"
     (cond 
     ((< 180 (get 'cano2 'angle)) (putprop 'cano2 180 ' angle))
     (t (putprop 'cano2 (+ (get 'cano2 'angle) 1) ' angle))))
 
 
+;Decrementa angle canó dreta i comprova si angle és menor a 0
+(defun dec-angle-dre ()
+    (cond 
+    ((> 0 (get 'cano2 'angle)) (putprop 'cano2 0 ' angle))
+    (t (putprop 'cano2 (- (get 'cano2 'angle) 1) ' angle))))
+
+;Mou 1 píxel a l'esquerra canó esquerra i comprova que no surti 
+;del camp esquerra
 (defun mou1-esq ()
     (cond 
     ((> 0 (get 'cano1 'posicio)) (putprop 'cano1 0 ' posicio))
     (t (putprop 'cano1 (- (get 'cano1 'posicio) 1) ' posicio))
 ))
 
+;Mou 1 píxel a la dreta canó esquerra i comprova que no surti 
+;del camp esquerra
 (defun mou1-dre ()
     (cond
     ((< (- (get 'escenari 'camp1amp) 20) (get 'cano1 'posicio)) 
@@ -74,6 +96,8 @@
     (t (putprop 'cano1 (+ (get 'cano1 'posicio) 1) ' posicio))
 ))
 
+;Mou 1 píxel a l'esquerra canó dreta i comprova que no surti 
+;del camp dret
 (defun mou2-esq ()
     (cond 
     ((> (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 
@@ -83,6 +107,8 @@
     (t (putprop 'cano2 (- (get 'cano2 'posicio) 1) ' posicio))
 ))
 
+;Mou 1 píxel a la dreta canó dreta i comprova que no surti 
+;del camp dret
 
 (defun mou2-dre ()
     (cond
@@ -91,24 +117,28 @@
     (t (putprop 'cano2 (+ (get 'cano2 'posicio) 1) ' posicio))
 ))
 
+;Incrementa en 2 potència canó esquerra amb límit superior 100
 (defun mespotencia-esq ()
     (cond 
     ((< 100 (get 'cano1 'velocitat)) (putprop 'cano1 100 ' velocitat))
     (t (putprop 'cano1 (+ (get 'cano1 'velocitat) 2) ' velocitat))
 ))
 
+;Decrementa en 2 potència canó dreta amb límit inferior 10
 (defun menyspotencia-esq ()
     (cond 
     ((> 10 (get 'cano1 'velocitat)) (putprop 'cano1 10 ' velocitat))
     (t (putprop 'cano1 (- (get 'cano1 'velocitat) 2) ' velocitat))
 ))
 
+;Incrementa en 2 potència canó dreta amb límit superior 100
 (defun mespotencia-dre ()
     (cond 
     ((< 100 (get 'cano2 'velocitat)) (putprop 'cano2 100 ' velocitat))
     (t (putprop 'cano2 (+ (get 'cano2 'velocitat) 2) ' velocitat))
 ))
 
+;Decrementa en 2 potència canó dreta amb límit inferior 10
 (defun menyspotencia-dre ()
     (cond 
     ((> 10 (get 'cano2 'velocitat)) (putprop 'cano2 10 ' velocitat))
@@ -214,20 +244,27 @@
 
 ;Funcions coordinades
 ; X = (V*cosa)*T+x0
-; Y = (V*sena)*T+1/2*a*t^2
+; Y = (V*sena)*T+1/2*a*t^2+y0
 
 (defun coordx (cano velocitat temps) 
     (+ (* (* velocitat (cos (radians (get cano 'angle)))) temps) 
-    (+ (get cano 'posicio) 10)))
+    (+ (+ (get cano 'posicio) 10) 
+    (* velocitat (cos (radians (get cano 'angle)))))))
+
+
 (defun coordy (cano velocitat temps)
     (+ (+ (* (* velocitat (sin (radians (get cano 'angle)))) temps)
-    (* 0.5(* -9.8 (* temps temps)))) (get cano 'altura)))
+    (* 0.5(* -9.8 (* temps temps)))) 
+    (+ (get cano 'altura)
+    (* velocitat (sin (radians (get cano 'angle)))))))
 
 
+;Bucle que pinta i escolta al teclat fins que s'acabi el joc
 (defun repeteix ()
     (pinta)
     (princ "Pitja ESC per acabar.")
     (terpri)
+    ;Si la condició de game over es compleix termina recursió
     (cond  ((equal (get 'escenari 'gameover) 1) 
             (color 255 0 0)
             "GAME OVER") 
@@ -239,9 +276,9 @@
 
 
           ((equal (get-key) 105) ; i
-           (inc-angle-dre) (repeteix)) ; puja canó esquerra
+           (dec-angle-dre) (repeteix)) ; puja canó dreta
           ((equal (get-key) 107) ; k
-           (dec-angle-dre) (repeteix)) ; baixa canó esquerra
+           (inc-angle-dre) (repeteix)) ; baixa canó dreta
 
           ((equal (get-key) 97) ; a
            (mou1-esq) (repeteix)) ; mou tank1 esquerra
@@ -264,11 +301,19 @@
            (menyspotencia-dre) (repeteix)) ; menys potència canó dreta
 
            ((equal (get-key) 102) ; f
-           (move (+ 10 (get 'cano1 'posicio)) (get 'cano1 'altura))
+           ;Movem punter a la punta del canó esquerra
+           (move (round (+ (+ (get 'cano1 'posicio) 10) 
+           (* (get 'cano1 'velocitat) (cos (radians (get 'cano1 'angle))))))
+           (round (+ (get 'cano1 'altura) (* (get 'cano1 'velocitat) 
+           (sin (radians (get 'cano1 'angle)))))))
            (dispara-esq 0) (repeteix)) ; dispara canó esquerra
 
           ((equal (get-key) 104) ; h
-           (move (+ 10 (get 'cano2 'posicio)) (get 'cano2 'altura)) 
+          ;Movem punter a la punta del canó dret
+           (move (round (+ (+ (get 'cano2 'posicio) 10) 
+           (* (get 'cano2 'velocitat) (cos (radians (get 'cano2 'angle))))))
+           (round (+ (get 'cano2 'altura) (* (get 'cano2 'velocitat) 
+           (sin (radians (get 'cano2 'angle)))))))
            (dispara-dre 0) (repeteix)) ; dispara canó dreta
            
 
@@ -279,27 +324,33 @@
 
 
 
+;Cada vegada que es crida esborra la pantalla i torna a pintar tots els
+;elements del joc
 (defun pinta ()
     (cls)
     (color 0 0 0)
     (rectangle 0 0 639 339)
 
-    ;CAMP1 CANO1
+    ;CAMP1
     (color 0 128 0)
     (rectangle 0 0 (get 'escenari 'camp1amp) (get 'escenari 'camp1alt))
 
+    ;TANK1
     (rectangle (get 'cano1 'posicio) (get 'escenari 'camp1alt) 20 10)
 
+    ;CANO1
     (angle (+ (get 'cano1 'posicio) 10) (+ (get 'escenari 'camp1alt) 10)
     (get 'cano1 'velocitat) (get 'cano1 'angle))
 
-    ;CAMP2 CANO2
+    ;CAMP2
     (color 255 0 0)
     (rectangle (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 0 
     (get 'escenari 'camp2amp) (get 'escenari 'camp2alt))
- 
+    
+    ;TANK2
     (rectangle (get 'cano2 'posicio) (get 'escenari 'camp2alt) 20 10)
 
+    ;CANO2
     (angle (+ (get 'cano2 'posicio) 10) (+ (get 'escenari 'camp2alt) 10)
     (get 'cano2 'velocitat) (get 'cano2 'angle))
 
@@ -309,12 +360,13 @@
     (get 'escenari 'muralt))
 )
 
-
+;Dibuixa angle
 (defun angle (x y r angle)
     (move x y)
     (drawr (+ x (* r (cos (radians angle))))
            (+ y (* r (sin (radians angle))))))
 
+;Dibuixa rectangle
 (defun rectangle (x y w h)
     (move x y)
     (drawrel w 0)
@@ -322,11 +374,12 @@
     (drawrel (- w) 0)
     (drawrel 0 (- h)))
 
+;Dibuixa a les coordenades arredonides
 (defun drawr (x y)
-  "pinta a les coordenades arrodonides"
   (draw (round x) 
         (round y)))
 
+;Passa a radians l'angle en graus
 (defun radians (graus)
   (/ (* graus (* 2 pi)) 360))
 
