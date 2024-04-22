@@ -24,7 +24,7 @@
 
     (putprop 'escenari (+ 15 (random 31)) 'camp2alt)
 
-    ;Angle, posició, altura i velocitat cano1
+    ;Angle, posició, altura, velocitat i resitència cano1
     (putprop 'cano1 45 'angle)
 
     ;La posició horitzontal és un valor random dins del segon terç
@@ -36,7 +36,9 @@
 
     (putprop 'cano1 20 'velocitat)
 
-    ;Angle, posició, altura i velocitat cano2
+    (putprop 'cano1 3 'resistencia)
+
+    ;Angle, posició, altura, velocitat i resistència cano2
     (putprop 'cano2 135 'angle) ;180-45
 
     ;La posició horitzontal és un valor random dins del segon terç
@@ -48,9 +50,11 @@
     (putprop 'cano2 (+ (get 'escenari 'camp2alt) 10) 'altura)
 
     (putprop 'cano2 20 'velocitat)
+    
+    (putprop 'cano2 3 'resistencia)
 
-    ;Propietat fi de partida
-    (putprop 'escenari 0 'gameover)
+    ;Força i direcció vent
+    (putprop 'escenari (- 5 (random 10)) 'vent)
 
     (repeteix))
 
@@ -146,7 +150,7 @@
 ))
 
 ;Dispara el canó de la esquerra
-;Si impacta l'altre canó es termina la partida
+;Si impacta l'altre canó baixa resistència dreta
 ;Si impacta altre objecte deixa de pintar
 ;Si no impacta res, es continua dibuixant la trajectòria
 (defun dispara-esq (temps) (sleep 0.0001) (cond 
@@ -186,7 +190,7 @@
     (coordy 'cano1 (get 'cano1 'velocitat) temps)) 
     (> (coordy 'cano1 (get 'cano1 'velocitat) temps) 
     (get 'escenari 'camp2alt)))) 
-    (putprop 'escenari 1 'gameover))
+    (putprop 'cano2 (- (get 'cano2 'resistencia) 1) 'resistencia))
 
 ;No impacta segueix dibuixant 
 (t (drawr (coordx 'cano1 (get 'cano1 'velocitat) temps) 
@@ -195,7 +199,7 @@
 
 
 ;Dispara el canó de la dreta 
-;Si impacta l'altre canó es termina la partida
+;Si impacta l'altre canó baixa resistència esquerra
 ;Si impacta altre objecte deixa de pintar
 ;Si no impacta res, es continua dibuixant la trajectòria
 (defun dispara-dre (temps)(sleep 0.0001)(cond 
@@ -236,22 +240,23 @@
     (coordy 'cano2 (get 'cano2 'velocitat) temps)) 
     (> (coordy 'cano2 (get 'cano2 'velocitat) temps) 
     (get 'escenari 'camp1alt)))) 
-    (putprop 'escenari 1 'gameover))
+    (putprop 'cano1 (- (get 'cano1 'resistencia) 1) 'resistencia))
+
 ;No impacta segueix dibuixant 
 (t (drawr (coordx 'cano2 (get 'cano2 'velocitat) temps)
           (coordy 'cano2 (get 'cano2 'velocitat) temps))
           (dispara-dre  (+  0.05 temps)))))
 
 ;Funcions coordinades
-; X = (V*cosa)*T+x0
-; Y = (V*sena)*T+1/2*a*t^2+y0
 
+; X = ((V*cosa)+(vent*T))*T+x0
 (defun coordx (cano velocitat temps) 
-    (+ (* (* velocitat (cos (radians (get cano 'angle)))) temps) 
+    (+ (* (+ (* velocitat (cos (radians (get cano 'angle)))) 
+    (* (get 'escenari 'vent) temps)) temps) 
     (+ (+ (get cano 'posicio) 10) 
     (* velocitat (cos (radians (get cano 'angle)))))))
 
-
+; Y = (V*sena)*T+1/2*a*t^2+y0
 (defun coordy (cano velocitat temps)
     (+ (+ (* (* velocitat (sin (radians (get cano 'angle)))) temps)
     (* 0.5(* -9.8 (* temps temps)))) 
@@ -264,10 +269,14 @@
     (pinta)
     (princ "Pitja ESC per acabar.")
     (terpri)
-    ;Si la condició de game over es compleix termina recursió
-    (cond  ((equal (get 'escenari 'gameover) 1) 
+    ;Si un dels és impactat 3 vegades, es termina la partida
+    (cond ((equal (get 'cano2 'resistencia) 0) 
+            (color 0 128 0)
+            "GAME OVER. GUANYA CANO1") 
+    
+          ((equal (get 'cano1 'resistencia) 0) 
             (color 255 0 0)
-            "GAME OVER") 
+            "GAME OVER. GUANYA CANO2") 
     
           ((equal (get-key) 119) ; w
            (inc-angle-esq) (repeteix)) ; puja canó esquerra
@@ -326,17 +335,20 @@
 
 ;Cada vegada que es crida esborra la pantalla i torna a pintar tots els
 ;elements del joc
-(defun pinta ()
+(defun pinta ()  (color 0 0 0 173 216 230)
     (cls)
     (color 0 0 0)
-    (rectangle 0 0 639 339)
+    (move 0 0)
+    (rectanglebuit 639 339)
 
     ;CAMP1
     (color 0 128 0)
-    (rectangle 0 0 (get 'escenari 'camp1amp) (get 'escenari 'camp1alt))
+    (move 0 0)
+    (rectangle (get 'escenari 'camp1amp) (get 'escenari 'camp1alt))
 
     ;TANK1
-    (rectangle (get 'cano1 'posicio) (get 'escenari 'camp1alt) 20 10)
+    (move (get 'cano1 'posicio) (get 'escenari 'camp1alt))
+    (rectangle 20 10)
 
     ;CANO1
     (angle (+ (get 'cano1 'posicio) 10) (+ (get 'escenari 'camp1alt) 10)
@@ -344,11 +356,12 @@
 
     ;CAMP2
     (color 255 0 0)
-    (rectangle (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 0 
-    (get 'escenari 'camp2amp) (get 'escenari 'camp2alt))
+    (move (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 0 )
+    (rectangle (get 'escenari 'camp2amp) (get 'escenari 'camp2alt))
     
     ;TANK2
-    (rectangle (get 'cano2 'posicio) (get 'escenari 'camp2alt) 20 10)
+    (move (get 'cano2 'posicio) (get 'escenari 'camp2alt))
+    (rectangle 20 10)
 
     ;CANO2
     (angle (+ (get 'cano2 'posicio) 10) (+ (get 'escenari 'camp2alt) 10)
@@ -356,8 +369,11 @@
 
     ;MUR
     (color 0 0 0)
-    (rectangle (get 'escenari 'camp1amp) 0 (get 'escenari 'muramp) 
-    (get 'escenari 'muralt))
+    (move (get 'escenari 'camp1amp) 0)
+    (rectangle (get 'escenari 'muramp) (get 'escenari 'muralt))
+
+    ;BANDERA VENT
+    (viento (get 'escenari 'vent))
 )
 
 ;Dibuixa angle
@@ -366,9 +382,16 @@
     (drawr (+ x (* r (cos (radians angle))))
            (+ y (* r (sin (radians angle))))))
 
-;Dibuixa rectangle
-(defun rectangle (x y w h)
-    (move x y)
+;Dibuixa rectangle complet
+(defun rectangle (w h) (cond
+    ((= h 0) nil)
+    (t (drawrel w 0)
+    (moverel (- 0 w) 1) 
+    (rectangle w (- h 1)))
+))
+
+;Dibuixa rectangle buit
+(defun rectanglebuit (w h)
     (drawrel w 0)
     (drawrel 0 h)
     (drawrel (- w) 0)
@@ -382,6 +405,26 @@
 ;Passa a radians l'angle en graus
 (defun radians (graus)
   (/ (* graus (* 2 pi)) 360))
+
+;Al acabar de pintar el muro nos movemos al centro de la parte superior,
+;dibujamos el palo de la bandera y dependiendo de la fuerza y dirección,
+;dibujamos o no la bandera en la dirección que se indica
+(defun viento (vent)
+(moverel (round (/ (get 'escenari 'muramp) 2)) 0)
+(drawrel 0 20)
+(cond
+((> vent 0) (rectanglebuit 20 10) (fillband vent))
+((< vent 0) (rectanglebuit -20 10) (fillband vent))
+(t nil)))
+
+
+;Función que dibuja las lineas de la bandera dependiendo de la fuerza
+;Con recursividad va añadiendo linea a linea
+(defun fillband (vent) (cond 
+((> vent 0) (drawrel 0 10) (moverel 4 -10) (fillband(- vent 1)))
+((< vent 0) (drawrel 0 10) (moverel -4 -10) (fillband (+ 1 vent)))
+(t nil)
+))
 
 (defun sleep (seconds)
     "Espera la quantitat indicada de segons"
