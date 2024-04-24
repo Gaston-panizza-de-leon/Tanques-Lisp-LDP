@@ -81,14 +81,14 @@
 (defun dec-angle-dre ()
     (cond 
     ((> 0 (get 'cano2 'angle)) (putprop 'cano2 0 ' angle))
-    (t (putprop 'cano2 (- (get 'cano2 'angle) 1) ' angle))))
+    (t (putprop 'cano2 (- (get 'cano2 'angle) 2) ' angle))))
 
 ;Mou 1 píxel a l'esquerra canó esquerra i comprova que no surti 
 ;del camp esquerra
 (defun mou1-esq ()
     (cond 
     ((> 0 (get 'cano1 'posicio)) (putprop 'cano1 0 ' posicio))
-    (t (putprop 'cano1 (- (get 'cano1 'posicio) 1) ' posicio))
+    (t (putprop 'cano1 (- (get 'cano1 'posicio) 2) ' posicio))
 ))
 
 ;Mou 1 píxel a la dreta canó esquerra i comprova que no surti 
@@ -97,7 +97,7 @@
     (cond
     ((< (- (get 'escenari 'camp1amp) 20) (get 'cano1 'posicio)) 
         (putprop 'cano1 (- (get 'escenari 'camp1amp) 20) ' posicio))
-    (t (putprop 'cano1 (+ (get 'cano1 'posicio) 1) ' posicio))
+    (t (putprop 'cano1 (+ (get 'cano1 'posicio) 2) ' posicio))
 ))
 
 ;Mou 1 píxel a l'esquerra canó dreta i comprova que no surti 
@@ -108,7 +108,7 @@
     (get 'cano2 'posicio)) 
     (putprop 'cano2 (+ (get 'escenari 'camp1amp) 
     (get 'escenari 'muramp)) ' posicio))
-    (t (putprop 'cano2 (- (get 'cano2 'posicio) 1) ' posicio))
+    (t (putprop 'cano2 (- (get 'cano2 'posicio) 2) ' posicio))
 ))
 
 ;Mou 1 píxel a la dreta canó dreta i comprova que no surti 
@@ -118,35 +118,35 @@
     (cond
     ((< 620 (get 'cano2 'posicio)) 
         (putprop 'cano2 620 ' posicio))
-    (t (putprop 'cano2 (+ (get 'cano2 'posicio) 1) ' posicio))
+    (t (putprop 'cano2 (+ (get 'cano2 'posicio) 2) ' posicio))
 ))
 
 ;Incrementa en 2 potència canó esquerra amb límit superior 100
 (defun mespotencia-esq ()
     (cond 
-    ((< 100 (get 'cano1 'velocitat)) (putprop 'cano1 100 ' velocitat))
-    (t (putprop 'cano1 (+ (get 'cano1 'velocitat) 2) ' velocitat))
+    ((< 100 (get 'cano1 'velocitat)) (putprop 'cano1 120 ' velocitat))
+    (t (putprop 'cano1 (+ (get 'cano1 'velocitat) 3) ' velocitat))
 ))
 
 ;Decrementa en 2 potència canó dreta amb límit inferior 10
 (defun menyspotencia-esq ()
     (cond 
     ((> 10 (get 'cano1 'velocitat)) (putprop 'cano1 10 ' velocitat))
-    (t (putprop 'cano1 (- (get 'cano1 'velocitat) 2) ' velocitat))
+    (t (putprop 'cano1 (- (get 'cano1 'velocitat) 3) ' velocitat))
 ))
 
 ;Incrementa en 2 potència canó dreta amb límit superior 100
 (defun mespotencia-dre ()
     (cond 
-    ((< 100 (get 'cano2 'velocitat)) (putprop 'cano2 100 ' velocitat))
-    (t (putprop 'cano2 (+ (get 'cano2 'velocitat) 2) ' velocitat))
+    ((< 100 (get 'cano2 'velocitat)) (putprop 'cano2 120 ' velocitat))
+    (t (putprop 'cano2 (+ (get 'cano2 'velocitat) 3) ' velocitat))
 ))
 
 ;Decrementa en 2 potència canó dreta amb límit inferior 10
 (defun menyspotencia-dre ()
     (cond 
     ((> 10 (get 'cano2 'velocitat)) (putprop 'cano2 10 ' velocitat))
-    (t (putprop 'cano2 (- (get 'cano2 'velocitat) 2) ' velocitat))
+    (t (putprop 'cano2 (- (get 'cano2 'velocitat) 3) ' velocitat))
 ))
 
 ;Dispara el canó de la esquerra
@@ -250,9 +250,10 @@
 ;Funcions coordinades
 
 ; X = ((V*cosa)+(vent*T))*T+x0
+; Força vent / 2. No sabem perquè s'aplica tanta força
 (defun coordx (cano velocitat temps) 
     (+ (* (+ (* velocitat (cos (radians (get cano 'angle)))) 
-    (* (get 'escenari 'vent) temps)) temps) 
+    (/ (* (get 'escenari 'vent) temps) 2)) temps) 
     (+ (+ (get cano 'posicio) 10) 
     (* velocitat (cos (radians (get cano 'angle)))))))
 
@@ -267,6 +268,7 @@
 ;Bucle que pinta i escolta al teclat fins que s'acabi el joc
 (defun repeteix ()
     (pinta)
+    (goto-xy 0 0)
     (princ "Pitja ESC per acabar.")
     (terpri)
     ;Si un dels és impactat 3 vegades, es termina la partida
@@ -346,6 +348,16 @@
     (move 0 0)
     (rectangle (get 'escenari 'camp1amp) (get 'escenari 'camp1alt))
 
+    ;GUIDE CONTROLS
+    (goto-xy 1 3)
+    (princ "F Dispara")
+    (goto-xy 1 4)
+    (princ "W/S Alt Cano")
+    (goto-xy 1 5)
+    (princ "A/D Mou Tank")
+    (goto-xy 1 6)
+    (princ "Q/E Pot Cano")
+
     ;TANK1
     (move (get 'cano1 'posicio) (get 'escenari 'camp1alt))
     (rectangle 20 10)
@@ -354,10 +366,25 @@
     (angle (+ (get 'cano1 'posicio) 10) (+ (get 'escenari 'camp1alt) 10)
     (get 'cano1 'velocitat) (get 'cano1 'angle))
 
+    ;VIDES CANO1
+    (move 120 305)
+    (pintavides (get 'cano1 'resistencia))
+
     ;CAMP2
     (color 255 0 0)
     (move (+ (get 'escenari 'camp1amp) (get 'escenari 'muramp)) 0 )
     (rectangle (get 'escenari 'camp2amp) (get 'escenari 'camp2alt))
+
+    ;GUIDE CONTROLS
+    (goto-xy 66 3)
+    (princ "H Dispara")
+    (goto-xy 66 4)
+    (princ "I/K Alt Cano")
+    (goto-xy 66 5)
+    (princ "J/L Mou Tank")
+    (goto-xy 66 6)
+    (princ "U/O Pot Cano")
+
     
     ;TANK2
     (move (get 'cano2 'posicio) (get 'escenari 'camp2alt))
@@ -367,6 +394,10 @@
     (angle (+ (get 'cano2 'posicio) 10) (+ (get 'escenari 'camp2alt) 10)
     (get 'cano2 'velocitat) (get 'cano2 'angle))
 
+    ;VIDES CANO2
+    (move 480 305)
+    (pintavides (get 'cano2 'resistencia))
+
     ;MUR
     (color 0 0 0)
     (move (get 'escenari 'camp1amp) 0)
@@ -375,6 +406,7 @@
     ;BANDERA VENT
     (viento (get 'escenari 'vent))
 )
+
 
 ;Dibuixa angle
 (defun angle (x y r angle)
@@ -413,17 +445,25 @@
 (moverel (round (/ (get 'escenari 'muramp) 2)) 0)
 (drawrel 0 20)
 (cond
-((> vent 0) (rectanglebuit 20 10) (fillband vent))
-((< vent 0) (rectanglebuit -20 10) (fillband vent))
+((> vent 0) (pintaband vent))
+((< vent 0) (pintaband vent))
 (t nil)))
 
 
 ;Función que dibuja las lineas de la bandera dependiendo de la fuerza
 ;Con recursividad va añadiendo linea a linea
-(defun fillband (vent) (cond 
-((> vent 0) (drawrel 0 10) (moverel 4 -10) (fillband(- vent 1)))
-((< vent 0) (drawrel 0 10) (moverel -4 -10) (fillband (+ 1 vent)))
+(defun pintaband (vent) (cond 
+((> vent 0) (rectanglebuit 4 10) (moverel 4 0) (pintaband(- vent 1)))
+((< vent 0) (rectanglebuit -4 10) (moverel -4 0) (pintaband (+ 1 vent)))
 (t nil)
+))
+
+;Dibuixa rectangles vermells amb vora negra iguals a la vida del canó.
+(defun pintavides (vides) (cond
+    ((= vides 0) nil)
+    (t (color 255 0 0) (rectangle 10 20) (moverel 0 -20)
+    (color 0 0 0) (rectanglebuit 10 20) (moverel 12 0) 
+    (pintavides (- vides 1)))
 ))
 
 (defun sleep (seconds)
