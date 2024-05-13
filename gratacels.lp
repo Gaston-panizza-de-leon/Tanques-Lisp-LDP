@@ -37,20 +37,22 @@ ciutats([E0,E1,E2,E3], [W0,W1,W2,W3], [N0,N1,N2,N3], [S0,S1,S2,S3], [F1,F2,F3,F4
     invert(C3, C3I),
     invert(C4, C4I),
 
-    %Cridam a la funcio vista que comprova que es compleixi el valor de vista amb la quantitat
-    %de gratacels visibles
-
-    vista(E0,F1), vista(E1,F2), vista(E2,F3), vista(E3,F4),
-    vista(W0,F1I), vista(W1,F2I), vista(W2,F3I), vista(W3,F4I),
-    vista(N0,C1), vista(N1,C2), vista(N2,C3), vista(N3,C4),
-    vista(S0,C1I), vista(S1,C2I), vista(S2,C3I), vista(S3,C4I),
 
     %Comprovam que amb la solució obtenida es compleix la restricció de no altures repetides
     %dins la mateixa columna. Sabem que a les files no hi ha repetits per com es formen i permuten.
     F11\=F21,F11\=F31,F11\=F41,F21\=F31,F21\=F41,F31\=F41,	%Columna1
     F12\=F22,F12\=F32,F12\=F42,F22\=F32,F22\=F42,F32\=F42,	%Columna2
     F13\=F23,F13\=F33,F13\=F43,F23\=F33,F23\=F43,F33\=F43,	%Columna3
-    F14\=F24,F14\=F34,F14\=F44,F24\=F34,F24\=F44,F34\=F44.	%Columna4
+    F14\=F24,F14\=F34,F14\=F44,F24\=F34,F24\=F44,F34\=F44,	%Columna4
+
+
+    %Cridam a la funcio vista que comprova que es compleixi el valor de vista amb la quantitat
+    %de gratacels visibles
+    vista(E0,F1), vista(E1,F2), vista(E2,F3), vista(E3,F4),
+    vista(W0,F1I), vista(W1,F2I), vista(W2,F3I), vista(W3,F4I),
+    vista(N0,C1), vista(N1,C2), vista(N2,C3), vista(N3,C4),
+    vista(S0,C1I), vista(S1,C2I), vista(S2,C3I), vista(S3,C4I).
+
 
 
 %Funcions permuta i insereix per obtenir totes les col·locacions dels nombres 1-4 dels vectors
