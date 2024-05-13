@@ -1,5 +1,4 @@
-%AUTORS: Gregori Serra Vinogradov
-         Lucas Gastón Panizza de León
+%AUTORS: Gregori Serra Vinogradov, Lucas Gastón Panizza de León
 
 %Funcio principal, donades 4 valors de vista per cada costat, resol el problema
 %dels gratacels, on a cada quadrícula hi ha un edifici amb altura 1-4, però
